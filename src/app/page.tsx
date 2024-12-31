@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
+import envConfig from "../../config";
 
 export default function Home() {
-  return <Button>Click me</Button>;
+  console.log(envConfig.NEXT_PUBLIC_API_ENDPOINT);
+  return (
+    <>
+      <Button>Click me</Button>
+    </>
+  );
 }
