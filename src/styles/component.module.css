@@ -1,0 +1,5 @@
+.text {
+  font-family: var(--font-inter);
+  font-weight: 200;
+  font-style: italic;
+}
