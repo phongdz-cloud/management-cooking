@@ -4,6 +4,7 @@ import "./globals.css";
 import styles from "../styles/component.module.css";
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["vietnamese"],
 });
 
 export const metadata: Metadata = {
