@@ -1,27 +1,47 @@
-"use client";
-import { Button } from "@/components/ui/button";
+'use client'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+} from '@/components/ui/card'
+import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { toast } from '@/hooks/use-toast'
+import { handleErrorApi } from '@/lib/utils'
+import { useLoginMutation } from '@/queries/useAuth'
+import { LoginBody, LoginBodyType } from '@/schemaValidations/auth.schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
 const LoginForm = () => {
+  const loginMutation = useLoginMutation()
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  });
+  })
+
+  const onSubmit = async (data: LoginBodyType) => {
+    // Prevent multiple click
+    if (loginMutation.isPending) return
+    try {
+      const result = await loginMutation.mutateAsync(data)
+      toast({
+        description: result.payload.message,
+      })
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      })
+    }
+  }
 
   return (
     <Card className="mx-auto max-w-sm">
@@ -33,11 +53,13 @@ const LoginForm = () => {
       </CardHeader>
 
       <CardContent>
-        {" "}
         <Form {...form}>
           <form
             className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
             noValidate
+            onSubmit={form.handleSubmit(onSubmit, (err) => {
+              console.warn(err)
+            })}
           >
             <div className="grid gap-4">
               <FormField
@@ -91,7 +113,7 @@ const LoginForm = () => {
         </Form>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm
