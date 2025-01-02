@@ -7,3 +7,10 @@ export const useLoginMutation = () => {
     mutationFn: authApiRequest.login,
   })
 }
+
+export const useLogoutMutation = () => {
+  // useMutation dùng để gọi API save data
+  return useMutation({
+    mutationFn: authApiRequest.logout,
+  })
+}
