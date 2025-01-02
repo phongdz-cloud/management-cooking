@@ -37,3 +37,13 @@ export const handleErrorApi = ({
     })
   }
 }
+
+export const getAccessTokenFromLocalStorage = () => {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('accessToken')
+}
+
+export const getRefreshTokenFromLocalStorage = () => {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('refreshToken')
+}

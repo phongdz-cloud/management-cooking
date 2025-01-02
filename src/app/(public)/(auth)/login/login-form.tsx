@@ -91,8 +91,8 @@ const LoginForm = () => {
                         <Label htmlFor="password">Password</Label>
                       </div>
                       <Input
-                        id="email"
-                        type="email"
+                        id="password"
+                        type="password"
                         placeholder="m@example.com"
                         required
                         {...field}
