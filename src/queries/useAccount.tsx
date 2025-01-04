@@ -22,3 +22,10 @@ export const useUpdateMeMutation = () => {
     mutationFn: accountApiRequest.updateMe,
   })
 }
+
+export const useChangePasswordMutation = () => {
+  // useMutation dùng để gọi API save data
+  return useMutation({
+    mutationFn: accountApiRequest.changePassword,
+  })
+}
