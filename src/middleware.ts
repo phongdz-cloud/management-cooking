@@ -24,8 +24,9 @@ export function middleware(request: NextRequest) {
 
   // Trường hợp đang nhập rồi, nhưng access token hết hạn
   if (isPrivatePath && !accessToken && refreshToken) {
-    const url = new URL('/logout', request.url)
+    const url = new URL('/refresh-token', request.url)
     url.searchParams.set('refreshToken', refreshToken)
+    url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
   }
 
