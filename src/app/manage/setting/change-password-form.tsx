@@ -1,19 +1,23 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-import { useForm } from 'react-hook-form'
+import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { toast } from '@/hooks/use-toast'
+import {
+  handleErrorApi,
+  setAccessTokenToLocalStorage,
+  setRefreshTokenToLocalStorage,
+} from '@/lib/utils'
+import { useChangePasswordMutation } from '@/queries/useAccount'
 import {
   ChangePasswordBody,
   ChangePasswordBodyType,
 } from '@/schemaValidations/account.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { useChangePasswordMutation } from '@/queries/useAccount'
-import { toast } from '@/hooks/use-toast'
-import { handleErrorApi } from '@/lib/utils'
+import { useForm } from 'react-hook-form'
 
 export default function ChangePasswordForm() {
   const changePasswordMutation = useChangePasswordMutation()
@@ -30,6 +34,9 @@ export default function ChangePasswordForm() {
     if (changePasswordMutation.isPending) return
     try {
       const result = await changePasswordMutation.mutateAsync(data)
+      const { accessToken, refreshToken } = result.payload.data
+      setAccessTokenToLocalStorage(accessToken)
+      setRefreshTokenToLocalStorage(refreshToken)
       toast({
         title: 'Thành công',
         description: result.payload.message,
