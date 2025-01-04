@@ -88,7 +88,7 @@ export const checkAndRefreshtoken = async (param?: {
     iat: number
   }
   // Thời điểm hết hạn của token tính theo epoch time (s)
-  const now = Math.round(new Date().getTime() / 1000)
+  const now = new Date().getTime() / 1000 - 1
   // Trường hợp refresh token hết hạn thì cho logout
   if (decodedRefreshToken.exp <= now) {
     removeTokensFromLocalStorage()
