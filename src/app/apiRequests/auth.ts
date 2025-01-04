@@ -3,6 +3,8 @@ import {
   LoginBodyType,
   LoginResType,
   LogoutBodyType,
+  RefreshTokenBodyType,
+  RefreshTokenResType,
 } from '@/schemaValidations/auth.schema'
 
 const authApiRequest = {
@@ -32,6 +34,12 @@ const authApiRequest = {
 
   // Path: client/src/app/apiRequests/auth.ts client tự động gửi accessToken và refreshToken qua cookie
   logout: async () => http.post('/api/auth/logout', null, { baseUrl: '' }),
+  sRefreshToken: async (body: RefreshTokenBodyType) =>
+    http.post<RefreshTokenResType>('/auth/refresh-token', body),
+  refreshToken: async () =>
+    http.post<RefreshTokenResType>('/api/auth/refresh-token', null, {
+      baseUrl: '',
+    }),
 }
 
 export default authApiRequest
