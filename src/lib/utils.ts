@@ -60,6 +60,11 @@ export const setRefreshTokenToLocalStorage = (refreshToken: string) => {
   localStorage.setItem('refreshToken', refreshToken)
 }
 
+export const removeTokensFromLocalStorage = () => {
+  localStorage.removeItem('accessToken')
+  localStorage.removeItem('refreshToken')
+}
+
 export const checkAndRefreshtoken = async (param?: {
   onError?: () => void
   onSuccess?: () => void
@@ -84,8 +89,13 @@ export const checkAndRefreshtoken = async (param?: {
   }
   // Thời điểm hết hạn của token tính theo epoch time (s)
   const now = Math.round(new Date().getTime() / 1000)
-  // Trường hợp refresh token hết hạn thì kh xử lý nữa
-  if (decodedRefreshToken.exp <= now) return
+  // Trường hợp refresh token hết hạn thì cho logout
+  if (decodedRefreshToken.exp <= now) {
+    removeTokensFromLocalStorage()
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    param?.onError && param?.onError()
+    return
+  }
 
   // Ví dụ access token của chúng ta có thời gian hết hạn là 10s
   // thì mình sẽ kiểm tra 1/3 thời gian (3s) thì mình sẽ cho refresh token lại
