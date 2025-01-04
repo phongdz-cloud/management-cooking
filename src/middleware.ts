@@ -8,15 +8,25 @@ const unAuthPaths = ['/login']
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   // Check if user is authenticated
-  const isAuth = Boolean(request.cookies.get('accessToken')?.value)
   const isPrivatePath = privatePaths.some((path) => pathname.startsWith(path))
   // Redirect to login page if user is not authenticated
-  if (isPrivatePath && !isAuth) {
+  const accessToken = request.cookies.get('accessToken')?.value
+  const refreshToken = request.cookies.get('refreshToken')?.value
+
+  if (isPrivatePath && !refreshToken) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
+
   // Redirect to manage page if user is authenticated and tries to access login page
-  if (unAuthPaths.includes(pathname) && isAuth) {
+  if (unAuthPaths.includes(pathname) && refreshToken) {
     return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  // Trường hợp đang nhập rồi, nhưng access token hết hạn
+  if (isPrivatePath && !accessToken && refreshToken) {
+    const url = new URL('/logout', request.url)
+    url.searchParams.set('refreshToken', refreshToken)
+    return NextResponse.redirect(url)
   }
 
   // Continue to the next middleware or the request handler
