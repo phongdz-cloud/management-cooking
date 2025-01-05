@@ -49,6 +49,7 @@ const LoginForm = () => {
         description: result.payload.message,
       })
       router.push('/manage/dashboard')
+      setIsAuth(true)
     } catch (error) {
       handleErrorApi({
         error,

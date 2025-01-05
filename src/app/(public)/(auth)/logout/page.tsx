@@ -1,5 +1,6 @@
 'use client'
 
+import { useAppContext } from '@/components/app-provider'
 import {
   getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
@@ -11,6 +12,7 @@ import React, { useEffect, useRef, Suspense } from 'react'
 const LogoutPage = () => {
   const { mutateAsync } = useLogoutMutation()
   const router = useRouter()
+  const { setIsAuth } = useAppContext()
   const ref = useRef<any>(null)
   const searchParams = useSearchParams()
   const refreshTokenFromUrl = searchParams.get('refreshToken')
@@ -28,6 +30,7 @@ const LogoutPage = () => {
         setTimeout(() => {
           ref.current = null
         })
+        setIsAuth(false)
         router.push('/login')
       })
     } else {
