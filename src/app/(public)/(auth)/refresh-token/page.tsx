@@ -24,6 +24,8 @@ const RefreshTokenPage = () => {
           router.push(redirectPathName || '/')
         },
       })
+    } else {
+      router.push('/')
     }
   }, [mutateAsync, router, refreshTokenFromUrl, redirectPathName])
   return <div>Refresh token...</div>

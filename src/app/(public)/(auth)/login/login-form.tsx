@@ -1,4 +1,5 @@
 'use client'
+import { useAppContext } from '@/components/app-provider'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -15,12 +16,16 @@ import { handleErrorApi } from '@/lib/utils'
 import { useLoginMutation } from '@/queries/useAuth'
 import { LoginBody, LoginBodyType } from '@/schemaValidations/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 const LoginForm = () => {
   const loginMutation = useLoginMutation()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { setIsAuth } = useAppContext()
+  const clearToken = searchParams.get('clearToken')
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -28,6 +33,12 @@ const LoginForm = () => {
       password: '',
     },
   })
+
+  useEffect(() => {
+    if (clearToken) {
+      setIsAuth(false)
+    }
+  }, [clearToken])
 
   const onSubmit = async (data: LoginBodyType) => {
     // Prevent multiple click
@@ -119,4 +130,10 @@ const LoginForm = () => {
   )
 }
 
-export default LoginForm
+const LoginPageWrapper = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <LoginForm />
+  </Suspense>
+)
+
+export default LoginPageWrapper

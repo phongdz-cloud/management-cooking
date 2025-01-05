@@ -17,24 +17,22 @@ const LogoutPage = () => {
   const accessTokenFromUrl = searchParams.get('accessToken')
   useEffect(() => {
     if (
-      ref.current ||
-      !refreshTokenFromUrl ||
-      !accessTokenFromUrl ||
-      (refreshTokenFromUrl &&
-        refreshTokenFromUrl !== getRefreshTokenFromLocalStorage()) ||
-      (accessTokenFromUrl &&
-        accessTokenFromUrl !== getAccessTokenFromLocalStorage())
+      ref.current &&
+      ((refreshTokenFromUrl &&
+        refreshTokenFromUrl === getRefreshTokenFromLocalStorage()) ||
+        (accessTokenFromUrl &&
+          accessTokenFromUrl === getAccessTokenFromLocalStorage()))
     ) {
-      router.push('/login')
-      return
-    }
-    ref.current = mutateAsync
-    mutateAsync().then(() => {
-      setTimeout(() => {
-        ref.current = null
+      ref.current = mutateAsync
+      mutateAsync().then(() => {
+        setTimeout(() => {
+          ref.current = null
+        })
+        router.push('/login')
       })
-      router.push('/login')
-    })
+    } else {
+      router.push('/')
+    }
   }, [mutateAsync, router, refreshTokenFromUrl, accessTokenFromUrl])
   return <div>Log out ...</div>
 }

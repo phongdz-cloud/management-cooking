@@ -14,7 +14,9 @@ export function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get('refreshToken')?.value
 
   if (isPrivatePath && !refreshToken) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    const url = new URL('/login', request.url)
+    url.searchParams.set('clearToken', 'true')
+    return NextResponse.redirect(url)
   }
 
   // Redirect to manage page if user is authenticated and tries to access login page
