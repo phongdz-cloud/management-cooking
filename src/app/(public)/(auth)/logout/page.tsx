@@ -36,7 +36,7 @@ const LogoutPage = () => {
     } else {
       router.push('/')
     }
-  }, [mutateAsync, router, refreshTokenFromUrl, accessTokenFromUrl])
+  }, [mutateAsync, router, refreshTokenFromUrl, accessTokenFromUrl, setIsAuth])
   return <div>Log out ...</div>
 }
 
