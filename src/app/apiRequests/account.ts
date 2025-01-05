@@ -42,12 +42,13 @@ const accountApiRequest = {
     http.post<AccountResType>(`${prefix}`, body),
 
   updateEmployee: (id: number, body: UpdateEmployeeAccountBodyType) =>
-    http.put<AccountResType>(`${prefix}/${id}`, body),
+    http.put<AccountResType>(`${prefix}/detail/${id}`, body),
 
-  getEmployee: (id: number) => http.get<AccountResType>(`${prefix}/${id}`),
+  getEmployee: (id: number) =>
+    http.get<AccountResType>(`${prefix}/detail/${id}`),
 
   deleteEmployee: (id: number) =>
-    http.delete<AccountResType>(`${prefix}/${id}`),
+    http.delete<AccountResType>(`${prefix}/detail/${id}`),
 }
 
 export default accountApiRequest

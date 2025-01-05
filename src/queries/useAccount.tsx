@@ -44,6 +44,7 @@ export const useGetAccount = ({ id }: { id: number }) => {
   return useQuery({
     queryKey: ['accounts', id],
     queryFn: () => accountApiRequest.getEmployee(id),
+    enabled: id !== 0,
   })
 }
 
@@ -70,6 +71,7 @@ export const useUpdateAccountMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['accounts'],
+        exact: true,
       })
     },
   })
