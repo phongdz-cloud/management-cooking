@@ -122,6 +122,7 @@ export default function EditEmployee({
         if (!value) {
           form.reset()
           setId(undefined)
+          setFile(null)
         }
       }}
     >
