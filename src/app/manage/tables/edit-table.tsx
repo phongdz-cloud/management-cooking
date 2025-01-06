@@ -18,7 +18,11 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
-import { getTableLink, getVietnameseTableStatus } from '@/lib/utils'
+import {
+  getTableLink,
+  getVietnameseTableStatus,
+  handleErrorApi,
+} from '@/lib/utils'
 import {
   Select,
   SelectContent,
@@ -33,6 +37,9 @@ import {
 import { TableStatus, TableStatusValues } from '@/constants/type'
 import { Switch } from '@/components/ui/switch'
 import Link from 'next/link'
+import { useGetTableById, useUpdateTableMutation } from '@/queries/useTable'
+import { useEffect } from 'react'
+import { toast } from '@/hooks/use-toast'
 
 export default function EditTable({
   id,
@@ -51,7 +58,54 @@ export default function EditTable({
       changeToken: false,
     },
   })
+  const { data } = useGetTableById({
+    id: id || 0,
+  })
+  const updateTableMutation = useUpdateTableMutation()
   const tableNumber = 0
+
+  useEffect(() => {
+    if (data) {
+      const { number, token, capacity, status } = data?.payload.data || {}
+      form.reset({
+        capacity,
+        status,
+        changeToken: !token,
+      })
+    }
+  }, [data, form])
+
+  const reset = () => {
+    form.reset()
+    setId(undefined)
+  }
+
+  const onSubmit = async (values: UpdateTableBodyType) => {
+    if (updateTableMutation.isPending) return
+
+    try {
+      let body: UpdateTableBodyType & { id: number } = {
+        id: id as number,
+        ...values,
+      }
+
+      const result = await updateTableMutation.mutateAsync(body)
+      onSubmitSuccess && onSubmitSuccess()
+      if (result.status === 200) {
+        toast({
+          description: result.payload.message,
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      })
+    } finally {
+      reset()
+    }
+  }
 
   return (
     <Dialog
@@ -77,6 +131,10 @@ export default function EditTable({
             noValidate
             className="grid auto-rows-max items-start gap-4 md:gap-8"
             id="edit-table-form"
+            onReset={reset}
+            onSubmit={form.handleSubmit(onSubmit, (error) => {
+              console.log(error)
+            })}
           >
             <div className="grid gap-4 py-4">
               <FormItem>
@@ -125,6 +183,7 @@ export default function EditTable({
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
