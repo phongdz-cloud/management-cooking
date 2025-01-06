@@ -47,13 +47,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useGetAccountList } from '@/queries/useAccount'
+import {
+  useDeleteAccountMutation,
+  useGetAccountList,
+} from '@/queries/useAccount'
 import {
   AccountListResType,
   AccountType,
 } from '@/schemaValidations/account.schema'
 import { useSearchParams } from 'next/navigation'
 import { createContext, useContext, useEffect, useState } from 'react'
+import { toast } from '@/hooks/use-toast'
+import { handleErrorApi } from '@/lib/utils'
 
 type AccountItem = AccountListResType['data'][0]
 
@@ -149,6 +154,22 @@ function AlertDialogDeleteAccount({
   employeeDelete: AccountItem | null
   setEmployeeDelete: (value: AccountItem | null) => void
 }) {
+  const { mutateAsync } = useDeleteAccountMutation()
+  const deleteAccount = async () => {
+    if (employeeDelete) {
+      try {
+        const result = await mutateAsync(employeeDelete.id)
+        setEmployeeDelete(null)
+        toast({
+          description: result.payload.message,
+        })
+      } catch (error) {
+        handleErrorApi({
+          error,
+        })
+      }
+    }
+  }
   return (
     <AlertDialog
       open={Boolean(employeeDelete)}
@@ -162,16 +183,18 @@ function AlertDialogDeleteAccount({
         <AlertDialogHeader>
           <AlertDialogTitle>Xóa nhân viên?</AlertDialogTitle>
           <AlertDialogDescription>
-            Tài khoản{' '}
+            Tài khoản
             <span className="bg-foreground text-primary-foreground rounded px-1">
               {employeeDelete?.name}
-            </span>{' '}
+            </span>
             sẽ bị xóa vĩnh viễn
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={deleteAccount}>
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
