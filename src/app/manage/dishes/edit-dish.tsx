@@ -1,4 +1,5 @@
 'use client'
+import revalidateApiRequest from '@/app/apiRequests/revalidate'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -119,6 +120,7 @@ export default function EditDish({
 
       const result = await updateDishMutation.mutateAsync(body)
 
+      await revalidateApiRequest('dishes')
       if (result.status === 200) {
         toast({
           description: result.payload.message,
