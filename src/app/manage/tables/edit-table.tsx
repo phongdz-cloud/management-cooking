@@ -40,6 +40,7 @@ import Link from 'next/link'
 import { useGetTableById, useUpdateTableMutation } from '@/queries/useTable'
 import { useEffect } from 'react'
 import { toast } from '@/hooks/use-toast'
+import QRCodeTable from '@/components/qrcode-table'
 
 export default function EditTable({
   id,
@@ -62,7 +63,6 @@ export default function EditTable({
     id: id || 0,
   })
   const updateTableMutation = useUpdateTableMutation()
-  const tableNumber = 0
 
   useEffect(() => {
     if (data) {
@@ -145,7 +145,7 @@ export default function EditTable({
                       id="number"
                       type="number"
                       className="w-full"
-                      value={tableNumber}
+                      value={data?.payload.data.number || 0}
                       readOnly
                     />
                     <FormMessage />
@@ -230,26 +230,35 @@ export default function EditTable({
               <FormItem>
                 <div className="grid grid-cols-4 items-center justify-items-start gap-4">
                   <Label>QR Code</Label>
-                  <div className="col-span-3 w-full space-y-2"></div>
+                  <div className="col-span-3 w-full space-y-2">
+                    {data && (
+                      <QRCodeTable
+                        token={data?.payload.data.token}
+                        tableNumber={data.payload.data.number}
+                      />
+                    )}
+                  </div>
                 </div>
               </FormItem>
               <FormItem>
                 <div className="grid grid-cols-4 items-center justify-items-start gap-4">
                   <Label>URL gọi món</Label>
                   <div className="col-span-3 w-full space-y-2">
-                    <Link
-                      href={getTableLink({
-                        token: '123123123',
-                        tableNumber: tableNumber,
-                      })}
-                      target="_blank"
-                      className="break-all"
-                    >
-                      {getTableLink({
-                        token: '123123123',
-                        tableNumber: tableNumber,
-                      })}
-                    </Link>
+                    {data && (
+                      <Link
+                        href={getTableLink({
+                          token: data?.payload.data.token,
+                          tableNumber: data?.payload.data.number,
+                        })}
+                        target="_blank"
+                        className="break-all"
+                      >
+                        {getTableLink({
+                          token: data?.payload.data.token,
+                          tableNumber: data?.payload.data.number,
+                        })}
+                      </Link>
+                    )}
                   </div>
                 </div>
               </FormItem>
