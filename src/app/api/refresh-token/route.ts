@@ -1,4 +1,4 @@
-import authApiRequest from '@/app/apiRequests/auth'
+import guestApiRequest from '@/app/apiRequests/guest'
 import { HttpError } from '@/lib/http'
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
@@ -13,7 +13,7 @@ export async function POST() {
     )
   }
   try {
-    const { payload } = await authApiRequest.sRefreshToken({
+    const { payload } = await guestApiRequest.sRefreshToken({
       refreshToken,
     })
     const decodedAccessToken = jwt.decode(payload.data.accessToken) as {
@@ -39,6 +39,7 @@ export async function POST() {
     })
     return Response.json(payload)
   } catch (error: any) {
+    console.log('error', error)
     if (error instanceof HttpError) {
       return Response.json(error.payload, { status: error.status })
     } else {
