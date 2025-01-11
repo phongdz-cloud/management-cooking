@@ -11,14 +11,14 @@ import {
   GuestLoginResType,
 } from '@/schemaValidations/guest.schema'
 
-const prefix = 'guests'
+const prefix = 'guest'
 const guestApiRequest = {
   refreshTokenRequest: null as Promise<{
     status: number
     payload: RefreshTokenResType
   }> | null,
   sLogin: async (body: GuestLoginBodyType) =>
-    http.post<GuestLoginResType>(`/${prefix}/auth/login'`, body),
+    http.post<GuestLoginResType>(`/${prefix}/auth/login`, body),
   login: async (body: GuestLoginBodyType) =>
     http.post<GuestLoginResType>(`/api/${prefix}/auth/login`, body, {
       baseUrl: '',

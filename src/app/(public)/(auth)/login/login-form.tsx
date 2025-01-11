@@ -24,7 +24,7 @@ const LoginForm = () => {
   const loginMutation = useLoginMutation()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { setIsAuth } = useAppContext()
+  const { setRole } = useAppContext()
   const clearToken = searchParams.get('clearToken')
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -36,7 +36,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (clearToken) {
-      setIsAuth(false)
+      setRole()
     }
   }, [clearToken])
 
@@ -49,7 +49,7 @@ const LoginForm = () => {
         description: result.payload.message,
       })
       router.push('/manage/dashboard')
-      setIsAuth(true)
+      setRole(result.payload.data.account.role)
     } catch (error) {
       handleErrorApi({
         error,

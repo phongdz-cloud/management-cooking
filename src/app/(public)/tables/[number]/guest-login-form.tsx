@@ -10,16 +10,48 @@ import {
   GuestLoginBody,
   GuestLoginBodyType,
 } from '@/schemaValidations/guest.schema'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
+import { useGuestLoginMutation } from '@/queries/useGuest'
+import { useAppContext } from '@/components/app-provider'
+import { handleErrorApi } from '@/lib/utils'
 
 export default function GuestLoginForm() {
+  const searchParams = useSearchParams()
+  const params = useParams()
+  const tableNumber = Number(params.number)
+  const token = searchParams.get('token')
+  const router = useRouter()
+  const loginMutation = useGuestLoginMutation()
+  const { setRole } = useAppContext()
   const form = useForm<GuestLoginBodyType>({
     resolver: zodResolver(GuestLoginBody),
     defaultValues: {
       name: '',
-      token: '',
-      tableNumber: 1,
+      token: token ?? '',
+      tableNumber,
     },
   })
+
+  useEffect(() => {
+    if (!token) {
+      router.push('/')
+    }
+  }, [token, router])
+
+  const onSubmit = async (values: GuestLoginBodyType) => {
+    if (loginMutation.isPending) return
+    try {
+      const result = await loginMutation.mutateAsync(values)
+      setRole(result.payload.data.guest.role)
+      router.push(`/guest/menu`)
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      })
+    }
+  }
 
   return (
     <Card className="mx-auto max-w-sm">
@@ -31,6 +63,9 @@ export default function GuestLoginForm() {
           <form
             className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
             noValidate
+            onSubmit={form.handleSubmit(onSubmit, (e) => {
+              console.log('error', e)
+            })}
           >
             <div className="grid gap-4">
               <FormField

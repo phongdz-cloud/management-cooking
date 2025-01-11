@@ -1,12 +1,21 @@
 'use client'
 import RefreshToken from '@/components/refresh-token'
 import {
+  decodeToken,
   getAccessTokenFromLocalStorage,
   removeTokensFromLocalStorage,
 } from '@/lib/utils'
+import { RoleType } from '@/types/jwt.types'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ReactNode, useCallback, useContext, useEffect, useState } from 'react'
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { createContext } from 'react'
 // Create a client
 const queryClient = new QueryClient({
@@ -19,8 +28,9 @@ const queryClient = new QueryClient({
 })
 
 const AppContext = createContext({
+  role: undefined as RoleType | undefined,
+  setRole: (role?: RoleType | undefined) => {},
   isAuth: false,
-  setIsAuth: (isAuth: boolean) => {},
 })
 
 export const useAppContext = () => {
@@ -28,30 +38,32 @@ export const useAppContext = () => {
 }
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuth, setIsAuthState] = useState(false)
+  const [role, setRoleState] = useState<RoleType | undefined>()
 
   useEffect(() => {
     const accessToken = getAccessTokenFromLocalStorage()
     if (accessToken) {
-      setIsAuthState(true)
+      const role = decodeToken(accessToken).role
+      setRoleState(role)
     }
   }, [])
 
-  const setIsAuth = useCallback((isAuth: boolean) => {
-    if (isAuth) {
-      setIsAuthState(true)
-    } else {
-      setIsAuthState(false)
+  const setRole = useCallback((role?: RoleType | undefined) => {
+    setRoleState(role)
+    if (!role) {
       removeTokensFromLocalStorage()
     }
   }, [])
+
+  const isAuth = useMemo(() => !!role, [role])
 
   return (
     // Nếu sử dụng React 19 thì không cần AppContext.Provider => AppContext
     <AppContext.Provider
       value={{
+        role,
+        setRole,
         isAuth,
-        setIsAuth,
       }}
     >
       <QueryClientProvider client={queryClient}>
