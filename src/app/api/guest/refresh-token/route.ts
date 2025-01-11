@@ -1,8 +1,6 @@
-import authApiRequest from '@/app/apiRequests/auth'
 import guestApiRequest from '@/app/apiRequests/guest'
 import { HttpError } from '@/lib/http'
 import { decodeToken } from '@/lib/utils'
-import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
 export async function POST() {
   // trả về request gửi lên
@@ -15,7 +13,7 @@ export async function POST() {
     )
   }
   try {
-    const { payload } = await authApiRequest.sRefreshToken({
+    const { payload } = await guestApiRequest.sRefreshToken({
       refreshToken,
     })
     const decodedAccessToken = decodeToken(payload.data.accessToken)
